@@ -1,0 +1,19 @@
+#!/bin/tcsh
+#
+# LSF batch script to run an MPI application
+#
+#BSUB -P UDEL0001              # project code
+#BSUB -W 00:15                 # wall-clock time (hrs:mins)
+#BSUB -n 400                   # number of tasks in job         
+#BSUB -x                       # dedicated nodes
+#BSUB -R "span[ptile=16]"      # run 16 MPI tasks per node
+#BSUB -J myjob                 # job name
+#BSUB -o myjob.%J.out          # output file name in which %J is replaced by the job ID
+#BSUB -e myjob.%J.err          # error file name in which %J is replaced by the job ID
+#BSUB -q economy               # queue
+
+#run the executable
+#setenv TMPDIR /glade/scratch/$USER
+#module load allinea/pr-5.0.1
+mpirun.lsf ./main
+#perf-report -mpi -n $LSB_DJOB_NUMPROC ./main
