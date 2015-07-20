@@ -4,7 +4,6 @@
       use var_inc
       implicit none 
 
-      real, dimension(0:npop-1) :: f9
       real, dimension(0:npop-1) :: Fbar
       real rho9, ux9, uy9, uz9, ux9s, uy9s, uz9s
       real t1, tl1, tl2, tl3, tl4, tl5, tl6, tl7, tl8, tl9, tl10, tl11,&
@@ -28,27 +27,27 @@
       do iy = 1,ly
       do ix = 1,lx
 
-        f9(:) = f(:,ix,iy,iz)
         !Determining macroscopiv variables
-        sum1 = f9(7) - f9(10)
-        sum2 = f9(9) - f9(8)
+        sum1 = f(7,ix,iy,iz) - f(10,ix,iy,iz)
+        sum2 = f(9,ix,iy,iz) - f(8,ix,iy,iz)
 
-        sum3 = f9(11) - f9(14)
-        sum4 = f9(13) - f9(12)
+        sum3 = f(11,ix,iy,iz) - f(14,ix,iy,iz)
+        sum4 = f(13,ix,iy,iz) - f(12,ix,iy,iz)
 
-        sum5 = f9(15) - f9(18)
-        sum6 = f9(17) - f9(16)
+        sum5 = f(15,ix,iy,iz) - f(18,ix,iy,iz)
+        sum6 = f(17,ix,iy,iz) - f(16,ix,iy,iz)
 
-        ux9 = f9(1) - f9(2) + sum1 + sum2 + sum3 + sum4 + force_realx(ix,iy,iz)/2.
-        uy9 = f9(3) - f9(4) + sum1 - sum2 + sum5 + sum6 + force_realy(ix,iy,iz)/2.
-        uz9 = f9(5) - f9(6) + sum3 - sum4 + sum5 - sum6 + force_realz(ix,iy,iz)/2.
+        ux9 = f(1,ix,iy,iz) - f(2,ix,iy,iz) + sum1 + sum2 + sum3 + sum4 + force_realx(ix,iy,iz)/2.
+        uy9 = f(3,ix,iy,iz) - f(4,ix,iy,iz) + sum1 - sum2 + sum5 + sum6 + force_realy(ix,iy,iz)/2.
+        uz9 = f(5,ix,iy,iz) - f(6,ix,iy,iz) + sum3 - sum4 + sum5 - sum6 + force_realz(ix,iy,iz)/2.
         ux9s = ux9*ux9
         uy9s = uy9*uy9
         uz9s = uz9*uz9
 
-        rho9 = f9(0)+f9(1)+f9(2)+f9(3)+f9(4)+f9(5)+f9(6)&
-           +f9(7)+f9(8)+f9(9)+f9(10)+f9(11)+f9(12)&
-          + f9(13)+f9(14)+f9(15)+f9(16)+f9(17)+f9(18)
+        rho9 = f(0,ix,iy,iz)
+        do ip = 1, npop-1
+          rho9 = rho9 + f(ip,ix,iy,iz)
+        enddo
 
         !I'm merging the forcing term with the collision operator
         fx9 = force_realx(ix,iy,iz)
@@ -70,7 +69,7 @@
           Fbar(ip) = ww2*(3.*G1 + 9.*G1*G2 - 3.*G3)
         enddo 
 
-        f9(:) = f(:,ix,iy,iz) + Fbar(:)/2.
+        f(:,ix,iy,iz) = f(:,ix,iy,iz) + Fbar(:)/2.
 
         t1 = ux9s + uy9s + uz9s
         eqm1 = -11.0*rho9 + 19.0*t1
@@ -89,42 +88,54 @@
         eqm14 = 0.0
         eqm15 = 0.0
 
-        sum1 = f9(1) + f9(2) + f9(3) + f9(4) + f9(5) + f9(6)        
-        sum2 = f9(7) + f9(8) + f9(9) + f9(10) + f9(11) + f9(12)        &
-             + f9(13) + f9(14) + f9(15) + f9(16) + f9(17) + f9(18)      
-        sum3 = f9(7) - f9(8) + f9(9) - f9(10) + f9(11) - f9(12)        &
-             + f9(13) - f9(14)
-        sum4 = f9(7) + f9(8) - f9(9) - f9(10) + f9(15) - f9(16)        &
-             + f9(17) - f9(18)
-        sum5 = f9(11) + f9(12) - f9(13) - f9(14) + f9(15) + f9(16)     &
-             - f9(17) - f9(18)
-        sum6 = f9(1) + f9(2)
-        sum7 = f9(3) + f9(4) + f9(5) + f9(6)
-        sum8 = f9(7) + f9(8) + f9(9) + f9(10) + f9(11) + f9(12)        &
-             + f9(13) + f9(14)
-        sum9 = f9(15) + f9(16) + f9(17) + f9(18)
-        sum10 = f9(3) + f9(4) - f9(5) - f9(6)
-        sum11 = f9(7) + f9(8) + f9(9) + f9(10) - f9(11) - f9(12)       &
-              - f9(13) - f9(14)
+        sum1 = f(1,ix,iy,iz) + f(2,ix,iy,iz) + f(3,ix,iy,iz) &
+               + f(4,ix,iy,iz) + f(5,ix,iy,iz) + f(6,ix,iy,iz)        
+        sum2 = f(7,ix,iy,iz) + f(8,ix,iy,iz) + f(9,ix,iy,iz)&
+               + f(10,ix,iy,iz) + f(11,ix,iy,iz) + f(12,ix,iy,iz) &
+               + f(13,ix,iy,iz) + f(14,ix,iy,iz) + f(15,ix,iy,iz) &
+               + f(16,ix,iy,iz) + f(17,ix,iy,iz) + f(18,ix,iy,iz)      
+        sum3 = f(7,ix,iy,iz) - f(8,ix,iy,iz) + f(9,ix,iy,iz) &
+               - f(10,ix,iy,iz) + f(11,ix,iy,iz) - f(12,ix,iy,iz) &
+               + f(13,ix,iy,iz) - f(14,ix,iy,iz)
+        sum4 = f(7,ix,iy,iz) + f(8,ix,iy,iz) - f(9,ix,iy,iz) &
+               - f(10,ix,iy,iz) + f(15,ix,iy,iz) - f(16,ix,iy,iz) &
+               + f(17,ix,iy,iz) - f(18,ix,iy,iz)
+        sum5 = f(11,ix,iy,iz) + f(12,ix,iy,iz) - f(13,ix,iy,iz) &
+               - f(14,ix,iy,iz) + f(15,ix,iy,iz) + f(16,ix,iy,iz) &
+               - f(17,ix,iy,iz) - f(18,ix,iy,iz)
+        sum6 = f(1,ix,iy,iz) + f(2,ix,iy,iz)
+        sum7 = f(3,ix,iy,iz) + f(4,ix,iy,iz) + f(5,ix,iy,iz) &
+               + f(6,ix,iy,iz)
+        sum8 = f(7,ix,iy,iz) + f(8,ix,iy,iz) + f(9,ix,iy,iz) &
+               + f(10,ix,iy,iz) + f(11,ix,iy,iz) + f(12,ix,iy,iz) &
+               + f(13,ix,iy,iz) + f(14,ix,iy,iz)
+        sum9 = f(15,ix,iy,iz) + f(16,ix,iy,iz) + f(17,ix,iy,iz) + f(18,ix,iy,iz)
+        sum10 = f(3,ix,iy,iz) + f(4,ix,iy,iz) - f(5,ix,iy,iz) - f(6,ix,iy,iz)
+        sum11 = f(7,ix,iy,iz) + f(8,ix,iy,iz) + f(9,ix,iy,iz) &
+                + f(10,ix,iy,iz) - f(11,ix,iy,iz) - f(12,ix,iy,iz) &
+              - f(13,ix,iy,iz) - f(14,ix,iy,iz)
     
-        evlm1 = -30.0*f9(0) + coef2*sum1 + coef3*sum2
-        evlm2 = 12.0*f9(0) + coef4*sum1 + sum2
-        evlm3 = coef4*(f9(1) - f9(2)) + sum3
-        evlm4 = coef4*(f9(3) - f9(4)) + sum4
-        evlm5 = coef4*(f9(5) - f9(6)) + sum5
+        evlm1 = -30.0*f(0,ix,iy,iz) + coef2*sum1 + coef3*sum2
+        evlm2 = 12.0*f(0,ix,iy,iz) + coef4*sum1 + sum2
+        evlm3 = coef4*(f(1,ix,iy,iz) - f(2,ix,iy,iz)) + sum3
+        evlm4 = coef4*(f(3,ix,iy,iz) - f(4,ix,iy,iz)) + sum4
+        evlm5 = coef4*(f(5,ix,iy,iz) - f(6,ix,iy,iz)) + sum5
         evlm6 = coef5*sum6 - sum7 + sum8 - coef5*sum9
         evlm7 = coef4*sum6 + coef5*sum7 + sum8 - coef5*sum9
         evlm8 = sum10 + sum11
         evlm9 =-coef5*sum10 + sum11
-        evlm10 = f9(7) - f9(8) - f9(9) + f9(10)
-        evlm11 = f9(15) - f9(16) - f9(17) + f9(18)
-        evlm12 = f9(11) - f9(12) - f9(13) + f9(14)
-        evlm13 = f9(7) - f9(8) + f9(9) - f9(10) - f9(11) + f9(12)      &
-               - f9(13) + f9(14)
-        evlm14 =-f9(7) - f9(8) + f9(9) + f9(10) + f9(15) - f9(16)      &
-               + f9(17) - f9(18)
-        evlm15 = f9(11) + f9(12) - f9(13) - f9(14) - f9(15) - f9(16)   &
-               + f9(17) + f9(18)
+        evlm10 = f(7,ix,iy,iz) - f(8,ix,iy,iz) - f(9,ix,iy,iz) + f(10,ix,iy,iz)
+        evlm11 = f(15,ix,iy,iz) - f(16,ix,iy,iz) - f(17,ix,iy,iz) + f(18,ix,iy,iz)
+        evlm12 = f(11,ix,iy,iz) - f(12,ix,iy,iz) - f(13,ix,iy,iz) + f(14,ix,iy,iz)
+        evlm13 = f(7,ix,iy,iz) - f(8,ix,iy,iz) + f(9,ix,iy,iz) &
+               - f(10,ix,iy,iz) - f(11,ix,iy,iz) + f(12,ix,iy,iz) &
+               - f(13,ix,iy,iz) + f(14,ix,iy,iz)
+        evlm14 =-f(7,ix,iy,iz) - f(8,ix,iy,iz) + f(9,ix,iy,iz) &
+                + f(10,ix,iy,iz) + f(15,ix,iy,iz) - f(16,ix,iy,iz) &
+               + f(17,ix,iy,iz) - f(18,ix,iy,iz)
+        evlm15 = f(11,ix,iy,iz) + f(12,ix,iy,iz) - f(13,ix,iy,iz) &
+                - f(14,ix,iy,iz) - f(15,ix,iy,iz) - f(16,ix,iy,iz) &
+                + f(17,ix,iy,iz) + f(18,ix,iy,iz)
    
         eqmc1 = evlm1 - s1*(evlm1 - eqm1)
         eqmc2 = evlm2 - s2*(evlm2 - eqm2)
@@ -166,7 +177,7 @@
         tl21 = coef3i*eqmc15
 
 
-        f9(0) = tl1 - 30.0*val2i*eqmc1 + val8*val3i*eqmc2
+        f(0,ix,iy,iz) = tl1 - 30.0*val2i*eqmc1 + val8*val3i*eqmc2 + 0.5*Fbar(0)
 
         suma = tl1 + tl2 + tl4
         sumb = tl1 + tl3 + tl5
@@ -186,31 +197,27 @@
         sum89 = tl8 + tl9
         sum1011 = tl10 + tl11
 
-        f9(1) = suma + sumc + sumd
-        f9(2) = suma - sumc + sumd
-        f9(3) = suma + sume + sumf
-        f9(4) = suma - sume + sumf
-        f9(5) = suma + sumg + sumh
-        f9(6) = suma - sumg + sumh
+        f(2,ix,iy,iz) = suma + sumc + sumd + 0.5*Fbar(1)
+        f(1,ix,iy,iz) = suma - sumc + sumd + 0.5*Fbar(2)
+        f(4,ix,iy,iz) = suma + sume + sumf + 0.5*Fbar(3)
+        f(3,ix,iy,iz) = suma - sume + sumf + 0.5*Fbar(4)
+        f(6,ix,iy,iz) = suma + sumg + sumh + 0.5*Fbar(5)
+        f(5,ix,iy,iz) = suma - sumg + sumh + 0.5*Fbar(6)
 
-        f9(7) = sumb + sum67 + sum89 + sumi + tl16 + tl19 - tl20
-        f9(8) = sumb - sum67 + sum89 + sumi - tl16 - tl19 - tl20
-        f9(9) = sumb + sum67 - sum89 + sumi - tl16 + tl19 + tl20
-        f9(10) = sumb - sum67 - sum89 + sumi + tl16 - tl19 + tl20
+        f(10,ix,iy,iz) = sumb + sum67 + sum89 + sumi + tl16 + tl19 - tl20 + 0.5*Fbar(7)
+        f(9,ix,iy,iz) = sumb - sum67 + sum89 + sumi - tl16 - tl19 - tl20 + 0.5*Fbar(8)
+        f(8,ix,iy,iz) = sumb + sum67 - sum89 + sumi - tl16 + tl19 + tl20 + 0.5*Fbar(9)
+        f(7,ix,iy,iz) = sumb - sum67 - sum89 + sumi + tl16 - tl19 + tl20 + 0.5*Fbar(10)
  
-        f9(11) = sumb + sum67 + sum1011 + sumk + tl18 - tl19 + tl21
-        f9(12) = sumb - sum67 + sum1011 + sumk - tl18 + tl19 + tl21
-        f9(13) = sumb + sum67 - sum1011 + sumk - tl18 - tl19 - tl21
-        f9(14) = sumb - sum67 - sum1011 + sumk + tl18 + tl19 - tl21
+        f(14,ix,iy,iz) = sumb + sum67 + sum1011 + sumk + tl18 - tl19 + tl21 + 0.5*Fbar(11)
+        f(13,ix,iy,iz) = sumb - sum67 + sum1011 + sumk - tl18 + tl19 + tl21 + 0.5*Fbar(12)
+        f(12,ix,iy,iz) = sumb + sum67 - sum1011 + sumk - tl18 - tl19 - tl21 + 0.5*Fbar(13)
+        f(11,ix,iy,iz) = sumb - sum67 - sum1011 + sumk + tl18 + tl19 - tl21 + 0.5*Fbar(14)
  
-        f9(15) = sumb + sum89 + sum1011 + sump + tl17 + tl20 - tl21
-        f9(16) = sumb - sum89 + sum1011 + sump - tl17 - tl20 - tl21
-        f9(17) = sumb + sum89 - sum1011 + sump - tl17 + tl20 + tl21
-        f9(18) = sumb - sum89 - sum1011 + sump + tl17 - tl20 + tl21
-
-        do ip = 0,npop-1
-          f(ipopp(ip),ix,iy,iz) = f9(ip) + 0.5*Fbar(ip)
-        enddo
+        f(18,ix,iy,iz) = sumb + sum89 + sum1011 + sump + tl17 + tl20 - tl21 + 0.5*Fbar(15)
+        f(17,ix,iy,iz) = sumb - sum89 + sum1011 + sump - tl17 - tl20 - tl21 + 0.5*Fbar(16)
+        f(16,ix,iy,iz) = sumb + sum89 - sum1011 + sump - tl17 + tl20 + tl21 + 0.5*Fbar(17)
+        f(15,ix,iy,iz) = sumb - sum89 - sum1011 + sump + tl17 - tl20 + tl21 + 0.5*Fbar(18)
           
       end do
       end do
