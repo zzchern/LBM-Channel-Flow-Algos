@@ -28,26 +28,13 @@
       do ix = 1,lx
 
         !Determining macroscopiv variables
-        sum1 = f(7,ix,iy,iz) - f(10,ix,iy,iz)
-        sum2 = f(9,ix,iy,iz) - f(8,ix,iy,iz)
-
-        sum3 = f(11,ix,iy,iz) - f(14,ix,iy,iz)
-        sum4 = f(13,ix,iy,iz) - f(12,ix,iy,iz)
-
-        sum5 = f(15,ix,iy,iz) - f(18,ix,iy,iz)
-        sum6 = f(17,ix,iy,iz) - f(16,ix,iy,iz)
-
-        ux9 = f(1,ix,iy,iz) - f(2,ix,iy,iz) + sum1 + sum2 + sum3 + sum4 + force_realx(ix,iy,iz)/2.
-        uy9 = f(3,ix,iy,iz) - f(4,ix,iy,iz) + sum1 - sum2 + sum5 + sum6 + force_realy(ix,iy,iz)/2.
-        uz9 = f(5,ix,iy,iz) - f(6,ix,iy,iz) + sum3 - sum4 + sum5 - sum6 + force_realz(ix,iy,iz)/2.
+        rho9 = rho(ix,iy,iz)
+        ux9 = ux(ix,iy,iz)
+        uy9 = uy(ix,iy,iz)
+        uz9 = uz(ix,iy,iz)
         ux9s = ux9*ux9
         uy9s = uy9*uy9
         uz9s = uz9*uz9
-
-        rho9 = f(0,ix,iy,iz)
-        do ip = 1, npop-1
-          rho9 = rho9 + f(ip,ix,iy,iz)
-        enddo
 
         !I'm merging the forcing term with the collision operator
         fx9 = force_realx(ix,iy,iz)
