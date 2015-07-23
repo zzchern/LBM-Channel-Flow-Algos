@@ -27,7 +27,7 @@
       tmpypS(:,lz+1,:) = tmpzpR(:,ly,:)
 
       tmpymS(:,0,:) = tmpzmR(:,:,1)
-      tmpymS(:,1:lz,:) = f(:,1:lx,1,1:lz)
+      tmpymS(:,1:lz,:) = f(1:lx,1,1:lz,:)
       tmpymS(:,lz+1,:) = tmpzpR(:,1,:)
 
       ilen = npop * lx * (lz + 2)
