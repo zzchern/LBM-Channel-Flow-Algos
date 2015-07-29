@@ -556,9 +556,9 @@
 
       integer ip
 
-      rho = f(0,:,:,:)
+      rho = f(0,1:lx,1:ly,1:lz)
       do ip = 1,npop-1
-        rho = rho + f(ip,:,:,:)
+        rho = rho + f(ip,1:lx,1:ly,1:lz)
       end do
       end subroutine rhoupdat 
 !===================================================================
