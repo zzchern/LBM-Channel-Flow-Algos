@@ -314,12 +314,12 @@
       integer ip
 
       if(sw .eq. 1)then
-        rho = f(:,:,:,0)
+        rho = f(1:lx,1:ly,1:lz,0)
         do ip = 1,npop-1
           rho = rho + f(1:lx,1:ly,1:lz,ip)
         end do
       else
-        rho = f(:,:,:,0)
+        rho = f(2:lx+1,2:ly+1,2:lz+1,0)
         do ip = 1,npop-1
           rho = rho + f(2:lx+1,2:ly+1,2:lz+1,ip)
         end do
